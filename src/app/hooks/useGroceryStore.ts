@@ -10,7 +10,6 @@ const STORAGE_KEY_LEGACY = 'grocery-items-status';
 const STORAGE_KEY_DATA = 'grocery-items-data';
 const STORAGE_KEY_ONBOARDING = 'grocery-onboarding-complete';
 
-// Fixed pool of items that are always in the system
 const FIXED_ITEMS: GroceryItem[] = [
   { id: '1', name: 'Milk', isAvailable: true },
   { id: '2', name: 'Eggs', isAvailable: true },
@@ -44,19 +43,18 @@ const FIXED_ITEMS: GroceryItem[] = [
   { id: '30', name: 'Paper Towels', isAvailable: true },
 ];
 
+export const SUGGESTED_ITEM_NAMES = FIXED_ITEMS.map(i => i.name);
+
 export const useGroceryStore = () => {
   const [items, setItems] = useState<GroceryItem[]>(() => {
-    // Try loading new data format first (includes custom items)
     const storedData = localStorage.getItem(STORAGE_KEY_DATA);
     if (storedData) {
       try {
         return JSON.parse(storedData) as GroceryItem[];
       } catch {
-        // Fallback
+        // fallback
       }
     }
-
-    // Fallback to legacy status map
     const storedStatus = localStorage.getItem(STORAGE_KEY_LEGACY);
     if (storedStatus) {
       try {
@@ -69,23 +67,15 @@ export const useGroceryStore = () => {
         return FIXED_ITEMS;
       }
     }
-    return FIXED_ITEMS; // default
+    return FIXED_ITEMS;
   });
 
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(() => {
     return localStorage.getItem(STORAGE_KEY_ONBOARDING) === 'true';
   });
 
-  const completeOnboarding = () => {
-    localStorage.setItem(STORAGE_KEY_ONBOARDING, 'true');
-    setHasCompletedOnboarding(true);
-  };
-
   useEffect(() => {
-    // Save full list to persist custom items
     localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(items));
-    
-    // Optional: Keep legacy map updated for fallback/compatibility
     const statusMap = items.reduce((acc, item) => {
       acc[item.id] = item.isAvailable;
       return acc;
@@ -94,35 +84,44 @@ export const useGroceryStore = () => {
   }, [items]);
 
   const toggleAvailability = (id: string) => {
-    setItems(items.map(item =>
+    setItems(prev => prev.map(item =>
       item.id === id ? { ...item, isAvailable: !item.isAvailable } : item
     ));
   };
 
   const markAsNeeded = (id: string) => {
-    setItems(items.map(item =>
+    setItems(prev => prev.map(item =>
       item.id === id ? { ...item, isAvailable: false } : item
     ));
   };
 
   const markAsBought = (id: string) => {
-    setItems(items.map(item =>
+    setItems(prev => prev.map(item =>
       item.id === id ? { ...item, isAvailable: true } : item
     ));
   };
-  
+
   const addItem = (name: string) => {
     if (!name.trim()) return;
     const newItem: GroceryItem = {
-      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+      id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
       name: name.trim(),
       isAvailable: true,
     };
-    setItems([newItem, ...items]);
+    setItems(prev => [newItem, ...prev]);
   };
 
   const removeItem = (id: string) => {
-    setItems(items.filter(item => item.id !== id));
+    setItems(prev => prev.filter(item => item.id !== id));
+  };
+
+  const initializeItems = (newItems: GroceryItem[]) => {
+    setItems(newItems);
+  };
+
+  const completeOnboarding = () => {
+    localStorage.setItem(STORAGE_KEY_ONBOARDING, 'true');
+    setHasCompletedOnboarding(true);
   };
 
   const getShoppingList = () => items.filter(item => !item.isAvailable);
@@ -130,14 +129,15 @@ export const useGroceryStore = () => {
 
   return {
     items,
+    hasCompletedOnboarding,
     toggleAvailability,
     markAsNeeded,
     markAsBought,
     addItem,
     removeItem,
+    initializeItems,
+    completeOnboarding,
     getShoppingList,
     getAvailableItems,
-    hasCompletedOnboarding,
-    completeOnboarding,
   };
 };

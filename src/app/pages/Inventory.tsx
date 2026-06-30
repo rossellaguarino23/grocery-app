@@ -1,7 +1,19 @@
+import { useState } from 'react';
 import { useGroceryStore } from '../hooks/useGroceryStore';
+import { Plus } from 'lucide-react';
 
 export function Inventory() {
-  const { items, toggleAvailability } = useGroceryStore();
+  const { items, toggleAvailability, addItem } = useGroceryStore();
+  const [newItemName, setNewItemName] = useState('');
+
+  const handleAddItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newItemName.trim()) {
+      addItem(newItemName);
+      setNewItemName('');
+    }
+  };
+
   const availableCount = items.filter(i => i.isAvailable).length;
   const neededCount = items.filter(i => !i.isAvailable).length;
 
@@ -19,6 +31,26 @@ export function Inventory() {
           <span className="text-[11px] font-bold text-rose-600 uppercase tracking-wider bg-rose-50/80 px-3.5 py-1.5 rounded-full z-10">Needed</span>
         </div>
       </div>
+
+      <form 
+        onSubmit={handleAddItem}
+        className="bg-white rounded-3xl p-2 flex items-center shadow-[0_8px_30px_-4px_rgba(139,92,246,0.06)] border border-violet-100/40 focus-within:border-violet-300 focus-within:ring-4 focus-within:ring-violet-50 transition-all"
+      >
+        <input
+          type="text"
+          value={newItemName}
+          onChange={(e) => setNewItemName(e.target.value)}
+          placeholder="Add new item to your pantry..."
+          className="flex-1 bg-transparent px-4 py-3 outline-none text-slate-700 placeholder:text-slate-400 font-medium text-[15px]"
+        />
+        <button
+          type="submit"
+          disabled={!newItemName.trim()}
+          className="bg-violet-600 text-white w-12 h-12 rounded-[1.25rem] flex items-center justify-center shadow-md disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 transition-all active:scale-95 mr-1"
+        >
+          <Plus size={24} strokeWidth={3} />
+        </button>
+      </form>
 
       <div className="bg-white rounded-[2rem] shadow-[0_8px_30px_-4px_rgba(139,92,246,0.06)] border border-violet-100/40 overflow-hidden">
         {items.map((item, index) => (

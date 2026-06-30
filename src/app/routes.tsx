@@ -4,7 +4,6 @@ import { Inventory } from './pages/Inventory';
 import { ShoppingList } from './pages/ShoppingList';
 import { Splash } from './pages/Splash';
 import { Welcome } from './pages/Welcome';
-import { Manage } from './pages/Manage';
 
 export const router = createBrowserRouter([
   {
@@ -26,14 +25,10 @@ export const router = createBrowserRouter([
         path: '/shopping-list',
         Component: ShoppingList,
       },
-      {
-        path: '/manage',
-        Component: Manage,
-      },
     ],
   },
   {
     path: '*',
     Component: () => <Navigate to="/" replace />,
-  }
+  },
 ]);
