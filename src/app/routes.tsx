@@ -1,34 +1,34 @@
-import { createBrowserRouter, Navigate } from 'react-router';
-import { Layout } from './components/Layout';
-import { Inventory } from './pages/Inventory';
-import { ShoppingList } from './pages/ShoppingList';
-import { Splash } from './pages/Splash';
-import { Welcome } from './pages/Welcome';
+import { createBrowserRouter, Navigate } from "react-router";
+import { Layout } from "./components/Layout";
+import { Inventory } from "./pages/Inventory";
+import { ShoppingList } from "./pages/ShoppingList";
+import { Splash } from "./pages/Splash";
+import { Welcome } from "./pages/Welcome";
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     Component: Splash,
-  },
-  {
-    path: '/welcome',
-    Component: Welcome,
   },
   {
     Component: Layout,
     children: [
       {
-        path: '/pantry',
+        path: "/welcome",
+        Component: Welcome,
+      },
+      {
+        path: "/pantry",
         Component: Inventory,
       },
       {
-        path: '/shopping-list',
+        path: "/shopping-list",
         Component: ShoppingList,
       },
     ],
   },
   {
-    path: '*',
+    path: "*",
     Component: () => <Navigate to="/" replace />,
   },
 ]);

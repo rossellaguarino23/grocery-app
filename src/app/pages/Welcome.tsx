@@ -1,22 +1,28 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { useGroceryStore, GroceryItem, SUGGESTED_ITEM_NAMES } from '../hooks/useGroceryStore';
-import { motion, AnimatePresence } from 'motion/react';
-import { Check, Plus, ShoppingCart, X } from 'lucide-react';
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import {
+  useGroceryStore,
+  GroceryItem,
+  SUGGESTED_ITEM_NAMES,
+} from "../hooks/useGroceryStore";
+import { motion, AnimatePresence } from "motion/react";
+import { Check, Plus, ShoppingCart, X } from "lucide-react";
 
 export function Welcome() {
   const navigate = useNavigate();
   const { initializeItems, completeOnboarding } = useGroceryStore();
 
-  const [selected, setSelected] = useState<Set<string>>(new Set(SUGGESTED_ITEM_NAMES));
+  const [selected, setSelected] = useState<Set<string>>(
+    new Set(SUGGESTED_ITEM_NAMES),
+  );
   const [customNames, setCustomNames] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
 
   const allNames = [...SUGGESTED_ITEM_NAMES, ...customNames];
   const selectedCount = selected.size;
 
   const toggle = (name: string) => {
-    setSelected(prev => {
+    setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(name)) next.delete(name);
       else next.add(name);
@@ -28,14 +34,14 @@ export function Welcome() {
     e.preventDefault();
     const name = inputValue.trim();
     if (!name || allNames.includes(name)) return;
-    setCustomNames(prev => [...prev, name]);
-    setSelected(prev => new Set([...prev, name]));
-    setInputValue('');
+    setCustomNames((prev) => [...prev, name]);
+    setSelected((prev) => new Set([...prev, name]));
+    setInputValue("");
   };
 
   const removeCustom = (name: string) => {
-    setCustomNames(prev => prev.filter(n => n !== name));
-    setSelected(prev => {
+    setCustomNames((prev) => prev.filter((n) => n !== name));
+    setSelected((prev) => {
       const next = new Set(prev);
       next.delete(name);
       return next;
@@ -44,7 +50,7 @@ export function Welcome() {
 
   const handleStart = () => {
     const chosenItems: GroceryItem[] = allNames
-      .filter(name => selected.has(name))
+      .filter((name) => selected.has(name))
       .map((name, i) => ({
         id: `${Date.now()}-${i}`,
         name,
@@ -52,7 +58,7 @@ export function Welcome() {
       }));
     initializeItems(chosenItems);
     completeOnboarding();
-    navigate('/pantry', { replace: true });
+    navigate("/pantry", { replace: true });
   };
 
   return (
@@ -65,13 +71,15 @@ export function Welcome() {
         <motion.div
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', duration: 0.7 }}
+          transition={{ type: "spring", duration: 0.7 }}
           className="relative z-10"
         >
           <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
             <ShoppingCart size={28} className="text-white" strokeWidth={2} />
           </div>
-          <h1 className="text-2xl font-black text-white tracking-tight">Welcome to Grocery Hub</h1>
+          <h1 className="text-2xl font-black text-white tracking-tight">
+            Welcome to Grocery Hub
+          </h1>
           <p className="text-violet-200 mt-1.5 font-medium text-[15px]">
             Choose what you keep at home
           </p>
@@ -91,7 +99,7 @@ export function Welcome() {
           <input
             type="text"
             value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
+            onChange={(e) => setInputValue(e.target.value)}
             placeholder="Add a custom item..."
             className="flex-1 bg-transparent px-4 py-3 outline-none text-slate-700 placeholder:text-slate-400 font-medium text-[15px]"
           />
@@ -135,28 +143,40 @@ export function Welcome() {
                   key={name}
                   layout
                   initial={isCustom ? { opacity: 0, height: 0 } : false}
-                  animate={{ opacity: 1, height: 'auto' }}
+                  animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.2 }}
-                  className={index !== allNames.length - 1 ? 'border-b border-slate-100/80' : ''}
+                  className={
+                    index !== allNames.length - 1
+                      ? "border-b border-slate-100/80"
+                      : ""
+                  }
                 >
                   <div className="flex items-center w-full">
                     <button
                       onClick={() => toggle(name)}
                       className={`flex-1 flex items-center justify-between p-4 px-5 transition-colors hover:bg-violet-50/30 active:bg-violet-50`}
                     >
-                      <span className={`text-[15px] font-semibold transition-colors ${
-                        isSelected ? 'text-slate-700' : 'text-slate-300'
-                      }`}>
+                      <span
+                        className={`text-[15px] font-semibold transition-colors ${
+                          isSelected ? "text-slate-700" : "text-slate-300"
+                        }`}
+                      >
                         {name}
                       </span>
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${
-                        isSelected
-                          ? 'bg-violet-500 border-violet-500'
-                          : 'border-slate-200 bg-white'
-                      }`}>
+                      <div
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+                          isSelected
+                            ? "bg-violet-500 border-violet-500"
+                            : "border-slate-200 bg-white"
+                        }`}
+                      >
                         {isSelected && (
-                          <Check size={13} strokeWidth={3} className="text-white" />
+                          <Check
+                            size={13}
+                            strokeWidth={3}
+                            className="text-white"
+                          />
                         )}
                       </div>
                     </button>
@@ -178,7 +198,7 @@ export function Welcome() {
       </div>
 
       {/* Fixed CTA */}
-      <div className="fixed bottom-0 left-0 right-0 px-4 py-4 bg-white/90 backdrop-blur-xl border-t border-violet-100/60 shadow-[0_-8px_20px_-4px_rgba(139,92,246,0.08)]">
+      <div className="fixed w-lg bottom-0 px-4 py-4 bg-white/90 backdrop-blur-xl border-t border-violet-100/60 shadow-[0_-8px_20px_-4px_rgba(139,92,246,0.08)]">
         <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -188,8 +208,8 @@ export function Welcome() {
           className="w-full bg-violet-600 text-white font-black py-[18px] rounded-2xl text-[17px] disabled:opacity-40 transition-all active:scale-[0.98] shadow-lg shadow-violet-200/60"
         >
           {selectedCount > 0
-            ? `Start tracking ${selectedCount} item${selectedCount !== 1 ? 's' : ''} →`
-            : 'Select at least one item'}
+            ? `Start tracking ${selectedCount} item${selectedCount !== 1 ? "s" : ""} →`
+            : "Select at least one item"}
         </motion.button>
       </div>
     </div>
